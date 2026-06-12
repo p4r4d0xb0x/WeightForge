@@ -1,0 +1,58 @@
+# ---------------------------------------------------------------------------
+# WeightForge (Ferry) — .gitignore
+# Data-free PoC: model weights and run artifacts are NEVER committed.
+# ---------------------------------------------------------------------------
+
+# Run artifacts (Aster real-model extension writes here; can reach tens of GB).
+# Contains 3.8GB params.safetensors per run — must never hit the repo.
+test_output/
+
+# Model weights / checkpoints (safety net — this project is data-free and
+# regenerates all weights from synthetic probes; never store binaries in git).
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+*.onnx
+*.npz
+
+# Hugging Face / torch caches that may appear locally.
+.cache/
+hf_cache/
+.huggingface/
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Test / type / lint caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# ---------------------------------------------------------------------------
+# Editor / OS
+# ---------------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db

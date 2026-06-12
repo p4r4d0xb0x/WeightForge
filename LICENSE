@@ -1,0 +1,109 @@
+WeightForge License (Source-Available, Publication-Reserved) — Strict Edition
+Copyright (c) 2026 p4r4d0xb0x ("the Author"). All rights reserved.
+
+This is NOT an OSI-approved open-source license. It is a restrictive,
+source-available license that grants a narrow, revocable use privilege while
+reserving all publication, research-credit, distribution, and commercial rights
+to the Author. If you do not accept every term below, you have no license and
+must not access or use the Work.
+
+1. Definitions
+   "The Work" means the WeightForge / Ferry source code, tests, documentation,
+   theory write-ups (including theory.html), configuration, and any other
+   material in this repository.
+   "Derivative" means any modification, adaptation, translation, port, or work
+   based on or incorporating any part of the Work.
+   "Output" means anything produced by running the Work or a Derivative,
+   including transferred, aligned, or distilled model weights and parameters.
+   "Results" means any metrics, benchmarks, findings, observations, or
+   conclusions obtained from the Work, a Derivative, or Output.
+   "You" means the individual who has obtained access to the Work; this license
+   is personal to You and is not extended to any employer, organization, or
+   third party.
+
+2. Limited Grant (narrow, personal, revocable)
+   Subject to strict compliance with every term of this license, the Author
+   grants You a personal, worldwide, royalty-free, non-exclusive,
+   non-transferable, non-sublicensable, revocable privilege to view, download,
+   compile, run, and locally modify the Work solely for Your own private,
+   non-public, non-commercial evaluation and research. Any Derivative remains
+   fully subject to this license. No other use is permitted.
+
+3. Prohibitions (no act below is permitted without the Author's prior written,
+   signed consent; each is reserved exclusively to the Author)
+   (a) Publishing or disseminating, in any medium or forum (academic or
+       informal), the Work, any Derivative, any Output, or any Results —
+       including papers, preprints, posters, talks, theses, articles, blog
+       posts, social posts, or public comparisons/benchmarks.
+   (b) Claiming research credit, authorship, scientific priority, or invention
+       for the ideas, methods, designs, or results embodied in the Work.
+   (c) Distributing, redistributing, publishing, sublicensing, selling,
+       mirroring, hosting, or publicly forking the Work, a Derivative, or
+       Output, in source or binary form, to any third party.
+   (d) Any commercial use whatsoever, including use in or for any product,
+       service, consulting, or revenue-generating activity.
+   (e) Using the Work, a Derivative, or Output to train, fine-tune, distill,
+       pre-train, align, evaluate, prompt, or otherwise develop or improve any
+       machine-learning model, system, product, or service.
+   (f) Incorporating the Work, a Derivative, or Output into any dataset,
+       training corpus, index, or benchmark.
+   (g) Filing any patent or other intellectual-property claim covering the
+       methods, designs, or ideas embodied in the Work.
+   (h) Using the names "WeightForge", "Ferry", or the Author to endorse,
+       promote, or market anything; no trademark or branding rights are
+       granted. Notices and this license text must not be removed or altered.
+   (i) Using the Work, a Derivative, or Output to build, inform, or accelerate
+       any competing or comparable method intended for public or commercial
+       release.
+
+4. Reservation and Permissions
+   All rights not expressly granted in Section 2 are reserved by the Author.
+   Permission for anything in Section 3 must be obtained in advance, in writing,
+   signed by the Author, and may be withheld, conditioned, or revoked at the
+   Author's sole discretion. Silence or non-response is not consent.
+
+5. Attribution and Citation
+   Any use granted under Section 2, and any use later permitted in writing under
+   Section 3, must clearly cite the Author and this repository:
+   https://github.com/p4r4d0xb0x/WeightForge
+
+6. Scope and Honest Limits
+   This license governs the Work's protected expression — its code, text, and
+   their Derivatives and copies. Copyright does not protect ideas as such, so
+   this license does not purport to restrict genuinely independent work that
+   does not copy from, adapt, or derive from the Work; it does, however,
+   restrict copying or reuse of the Work's expression and the acts listed in
+   Section 3 to the fullest extent permitted by law. Copyright in the Work is
+   not transferred.
+
+7. No Implied Rights
+   Nothing in this license grants any right by implication, estoppel, or
+   otherwise. No rights are granted to any future version, branch, or related
+   work of the Author. This license does not create any partnership, agency, or
+   joint-venture relationship.
+
+8. Termination
+   This license terminates automatically and immediately upon any breach, and
+   may be revoked by the Author at any time on written notice. Upon termination
+   or on the Author's written request, You must immediately cease all use of and
+   destroy all copies of the Work, Derivatives, and Output in Your possession or
+   control, and, if asked, certify such destruction in writing.
+
+9. Survival
+   Sections 1, 3, 4, 6, 7, 10, and 11 survive termination of this license.
+
+10. Remedies
+    You acknowledge that any breach of Section 3 would cause the Author
+    irreparable harm for which monetary damages are inadequate, and that the
+    Author is therefore entitled to seek injunctive and other equitable relief,
+    in addition to any other remedy available at law.
+
+11. No Warranty; Limitation of Liability
+    THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. TO THE MAXIMUM EXTENT
+    PERMITTED BY LAW, THE AUTHOR SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+    OTHER LIABILITY, WHETHER IN CONTRACT, TORT, OR OTHERWISE, ARISING FROM OR IN
+    CONNECTION WITH THE WORK OR ITS USE.
+
+For permissions beyond this license, contact the Author.
