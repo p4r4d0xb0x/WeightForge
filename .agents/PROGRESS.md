@@ -1,10 +1,43 @@
 ---
 project: Ferry
 created: 2026-06-10
-updated: 2026-06-12 (Korean-weighted Procrustes — 한글 anchor 업웨이트, DEC-014)
+updated: 2026-06-12 (public git repo 발행 + strict source-available LICENSE, DEC-015)
 ---
 
 # Progress
+
+## 2026-06-12 (공개 git repo 발행 — WeightForge, gitignore/README/strict LICENSE, DEC-015)
+
+### Completed
+
+- **빈 공개 repo `p4r4d0xb0x/WeightForge`(PUBLIC, isEmpty) 초기 세팅**(사용자 위임 "잘 세팅해봐").
+  로컬 `main` 커밋 0개 → 초기 커밋 `770bfece` → `git push -u origin main`(`[new branch] main -> main`).
+- **`.gitignore` 신규**: `test_output/`(**23GB**, 3.8GB `params.safetensors`×6 — GitHub 100MB 초과) +
+  모델 가중치(`*.safetensors`/`*.bin`/`*.pt`/...) + 파이썬/테스트 캐시 + venv + 에디터/OS junk 제외.
+  실제 푸시 = 소스 5 + 테스트 2 + `theory.html` + `AGENTS.md` + `.agents/` 6 + `README.md` + `LICENSE`
+  = **19파일 0.3MB**(>50MB 0개 가드 통과).
+- **`README.md` 신규**(최소): 요약·4-stage 표·layout·실행법·정직한 한계·LICENSE 안내. "no README" 규약을
+  사용자 결정으로 override(단순성 규칙 유지).
+- **`LICENSE` 신규 — Strict Edition**(사용자 verbatim "조항을 더 엄격하게"): source-available·
+  publication-reserved. §2 좁은·revocable use(private 비공개·비상업 evaluation/research), §3 금지 9종
+  (publication·research-credit·redistribution·commercial·**Work/Output로 타 모델 train/distill(e)**·
+  dataset 편입(f)·patent(g)·trademark(h)·competing method(i)), §8 위반 시 파기, §10 injunctive relief,
+  §6 아이디어는 저작권으로 못 막음 정직 명시. **OSI 비승인(의도적)**.
+- **GitHub 설명문 정정**(`gh repo edit`): 기존 "without ... output matching"(실제와 모순) →
+  실제 파이프라인(data-free transfer + closed-form align + gradient distill, depth/width/vocab 변경) 반영.
+- **SSOT 동기화**: `AGENTS.md` layout/operating-rules의 stale 문구("no git/README", "Not a git repo")
+  갱신, `.agents/DECISION.md` **DEC-015** 추가(MADR-lite, frontmatter count 14→15).
+
+### Notes
+
+- **검증**: `pytest test_ferry.py -q` **42 passed**(코드 미변경), `.gitignore` `git check-ignore`로
+  23GB 차단 확인, `git ls-remote` `refs/heads/main = 770bfece`, `gh repo view` `isEmpty:false`·
+  `defaultBranch:main`·설명문 반영·PUBLIC.
+- **data-free 불변**: 가중치·`test_output` 산출물은 git 진입 불가(gitignore). 모든 `.py`/`theory.html`/
+  테스트 로직 **미변경**(코드 변경 0). DEC-004 TODO↔Issue `off` 유지.
+- **잔여/heads-up**: 저작권자 표기 = GitHub 핸들 `p4r4d0xb0x`(실명/연락처 후속 교체 가능). 커밋 author
+  이메일 `root@ql.gl`이 공개 커밋 메타데이터에 노출(원하면 `--amend --reset-author`로 교체).
+- 잔여 마커 0(`todo!()`/`TODO`/skip 없음, 신규/수정 파일 전부).
 
 ## 2026-06-12 (Korean-weighted orthogonal Procrustes, `--kr-weight`, DEC-014)
 

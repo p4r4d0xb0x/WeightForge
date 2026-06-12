@@ -1,6 +1,6 @@
 # Ferry — Session Handoff
 
-> 마지막 갱신: 2026-06-12 (Aster 실모델 확장 아크 DEC-008~014 완료 반영). 세션 간 인수인계용 요약. 권위 있는 세부는 `.agents/` 6 docs와 `AGENTS.md`를 따른다.
+> 마지막 갱신: 2026-06-12 (공개 git repo 발행 `WeightForge` + strict source-available LICENSE, DEC-015; 그 전 Aster 실모델 확장 아크 DEC-008~014). 세션 간 인수인계용 요약. 권위 있는 세부는 `.agents/` 6 docs와 `AGENTS.md`를 따른다.
 
 ## 1. 한 줄 요약
 
@@ -9,6 +9,9 @@
 **확장(2026-06-11~12)**: 같은 Ferry 파이프라인을 **실모델 Gemma-2 → Aster(`../SLM_FROM_BEGIN`의 Rust from-scratch SLM)** 에 적용 (DEC-008~014, §10). 순수 전이 → embed collapse 타파 → 한글 reachability → closed-form 정렬 → 한글 가중 정렬까지 진행. 전부 CPU·data-free·신규 파일만 출력(live 학습 미접촉). 정직 결론: **한글 도달은 달성, 유창성은 학습/KD 영역**.
 
 ## 2. 파일 구조 (flat, 패키징 없음)
+
+> **공개됨**(DEC-015): `github.com/p4r4d0xb0x/WeightForge`(PUBLIC, 코드네임 Ferry). 초기 커밋 `770bfece`,
+> `origin/main` 푸시 완료. `test_output/`(23GB)는 `.gitignore`로 제외(git 미진입). data-free 불변.
 
 | 파일 | 역할 |
 |---|---|
@@ -21,6 +24,9 @@
 | `align_aster_embed.py` | **Aster 확장**(DEC-013 b′ + DEC-014): closed-form 직교 Procrustes embed-basis 정렬 + 한글 가중(`--kr-weight`). ~300 LOC |
 | `test_output/` | Aster 산출물(전이/KD/정렬 params·report). git 미추적 |
 | `theory.html` | self-contained 이론 문서(공학자 판본, 무의존성). 시각 번호 §0–11, svg 8, table 7 (toy core 한정) |
+| `README.md` | **공개 repo 최소 README**(DEC-015) — 요약·4-stage·layout·실행법·정직한 한계·LICENSE 안내 |
+| `LICENSE` | **strict source-available·publication-reserved**(DEC-015). §2 좁은 use, §3 금지 9종(타 모델 train/distill·patent·competing 포함), OSI 비승인 |
+| `.gitignore` | `test_output/`(23GB)·모델 가중치·파이썬/테스트 캐시·venv·OS junk 제외(DEC-015) |
 | `AGENTS.md` | 프로젝트 규약 — what/goal/hard constraints/layout/commands/core pipeline/gotchas |
 | `.agents/*.md` | GOAL/PLAN/TODO/PROGRESS/DECISION/MEMORY 6 docs |
 | `handoff.md` | 이 문서 |
