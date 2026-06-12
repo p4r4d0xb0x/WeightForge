@@ -55,7 +55,7 @@ decisions: [DEC-001, DEC-002, DEC-003, DEC-004, DEC-005, DEC-006, DEC-007, DEC-0
   유지, 근거 문구만 갱신).
 - 라이선스는 코드/텍스트/파생물의 복제·배포·발표는 규율하나 **독립 아이디어는 못 막음**(저작권 한계,
   LICENSE §5에 명시) — 과대 주장 회피.
-- copyright holder는 GitHub 핸들 `p4r4d0xb0x`로 표기(실명/연락처는 사용자가 후속 교체 가능).
+- copyright holder = **Kim Dogyun (김도균)**(LICENSE 저작권 표기). repo URL의 `p4r4d0xb0x`는 GitHub 핸들로 유지.
 
 ### Alternatives (대안)
 

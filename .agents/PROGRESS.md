@@ -35,7 +35,7 @@ updated: 2026-06-12 (public git repo 발행 + strict source-available LICENSE, D
   `defaultBranch:main`·설명문 반영·PUBLIC.
 - **data-free 불변**: 가중치·`test_output` 산출물은 git 진입 불가(gitignore). 모든 `.py`/`theory.html`/
   테스트 로직 **미변경**(코드 변경 0). DEC-004 TODO↔Issue `off` 유지.
-- **잔여/heads-up**: 저작권자 표기 = GitHub 핸들 `p4r4d0xb0x`(실명/연락처 후속 교체 가능). 커밋 author
+- **잔여/heads-up**: 저작권자 표기 = **Kim Dogyun (김도균)**(LICENSE; repo URL의 `p4r4d0xb0x`는 핸들로 유지). 커밋 author
   이메일 `root@ql.gl`이 공개 커밋 메타데이터에 노출(원하면 `--amend --reset-author`로 교체).
 - 잔여 마커 0(`todo!()`/`TODO`/skip 없음, 신규/수정 파일 전부).
 
