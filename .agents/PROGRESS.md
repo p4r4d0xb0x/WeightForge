@@ -1,10 +1,36 @@
 ---
 project: Ferry
 created: 2026-06-10
-updated: 2026-06-12 (public git repo 발행 + strict source-available LICENSE, DEC-015)
+updated: 2026-06-13 (커밋 author/committer 이메일 GitHub noreply 교체 + 히스토리 재작성, DEC-016)
 ---
 
 # Progress
+
+## 2026-06-13 (커밋 author/committer 이메일 GitHub noreply 교체 — 개인 이메일 노출 제거, DEC-016)
+
+### Completed
+
+- **global `user.email` 교체**(사용자 "user.email 교체 후 처리 ㄱ" / "global 교체 ㄱㄱ"):
+  `~/.gitconfig` `root@ql.gl` → **`17896027+p4r4d0xb0x@users.noreply.github.com`**(GitHub noreply,
+  id 17896027). `user.name`은 핸들 `p4r4d0xb0x` 유지(실명 박기 = 프라이버시 역행). local override
+  없어 global이 이 repo에 그대로 적용.
+- **기존 3개 커밋 히스토리 재작성**: `git filter-branch --env-filter`로 author+committer 이메일만
+  `root@ql.gl`→noreply 교체, **이름·날짜 보존**(filter-repo 미설치 → built-in 사용).
+  해시 변경 `770bfec→0ec1c4a / 54fbdfc→d664600 / afcf2ef→1a0cd6d`.
+- **force-push**: `git push --force-with-lease=main:afcf2ef…`(원격이 옛 head일 때만) →
+  `afcf2ef…1a0cd6d (forced update)`.
+- **로컬 백업 정리**: filter-branch가 `refs/original/refs/heads/main` **+
+  `refs/original/refs/remotes/origin/main`** 둘 다 생성 → 전부 삭제 + `reflog expire --all` +
+  `gc --prune=now`로 옛 커밋 제거.
+
+### Notes
+
+- **검증**: `git log --all | grep -c root@ql.gl` = **0**(reachable 히스토리 전부), 원격
+  head=`1a0cd6d` 로컬 일치, `git status` ahead/behind 0, global email 적용 확인.
+- **heads-up**: global 변경이라 이 머신 **모든 repo 향후 커밋**이 noreply 사용(다른 identity 작업 시
+  별도 지정 필요). 옛 커밋(`afcf2ef` 등)은 도달 불가하나 GitHub GC 전까지 직접 SHA로 일시 잔존 가능
+  (공개 브랜치엔 비노출 → 완전 소거는 GitHub Support GC 영역).
+- 코드/문서/LICENSE 내용·커밋 메시지·트리 불변(식별자만 교체). 잔여 마커 0.
 
 ## 2026-06-12 (공개 git repo 발행 — WeightForge, gitignore/README/strict LICENSE, DEC-015)
 
@@ -36,7 +62,7 @@ updated: 2026-06-12 (public git repo 발행 + strict source-available LICENSE, D
 - **data-free 불변**: 가중치·`test_output` 산출물은 git 진입 불가(gitignore). 모든 `.py`/`theory.html`/
   테스트 로직 **미변경**(코드 변경 0). DEC-004 TODO↔Issue `off` 유지.
 - **잔여/heads-up**: 저작권자 표기 = **Kim Dogyun (김도균)**(LICENSE; repo URL의 `p4r4d0xb0x`는 핸들로 유지). 커밋 author
-  이메일 `root@ql.gl`이 공개 커밋 메타데이터에 노출(원하면 `--amend --reset-author`로 교체).
+  이메일 `root@ql.gl` 노출 → **2026-06-13 DEC-016으로 GitHub noreply 교체·해소**(filter-branch 히스토리 재작성 + force-push).
 - 잔여 마커 0(`todo!()`/`TODO`/skip 없음, 신규/수정 파일 전부).
 
 ## 2026-06-12 (Korean-weighted orthogonal Procrustes, `--kr-weight`, DEC-014)

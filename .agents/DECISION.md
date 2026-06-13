@@ -1,12 +1,67 @@
 ---
 project: Ferry
 created: 2026-06-10
-updated: 2026-06-12 (DEC-015 공개 git repo 발행 + source-available publication-reserved LICENSE)
-decision_count: 15
-decisions: [DEC-001, DEC-002, DEC-003, DEC-004, DEC-005, DEC-006, DEC-007, DEC-008, DEC-009, DEC-010, DEC-011, DEC-012, DEC-013, DEC-014, DEC-015]
+updated: 2026-06-13 (DEC-016 커밋 author/committer 이메일 GitHub noreply 교체 + 히스토리 재작성)
+decision_count: 16
+decisions: [DEC-001, DEC-002, DEC-003, DEC-004, DEC-005, DEC-006, DEC-007, DEC-008, DEC-009, DEC-010, DEC-011, DEC-012, DEC-013, DEC-014, DEC-015, DEC-016]
 ---
 
 # Decisions
+
+## DEC-016 — 커밋 author/committer 이메일을 GitHub noreply로 교체 (개인 이메일 노출 제거, global identity + 히스토리 재작성)
+
+- **Date**: 2026-06-13
+- **Status**: Active
+
+### Context (배경)
+
+- [Fact] DEC-015로 공개 repo 발행 시, 커밋 author/committer 이메일이 global `~/.gitconfig`의
+  `user.email=root@ql.gl`로 박혀 **공개 커밋 메타데이터에 개인 이메일이 노출**됨(DEC-015 PROGRESS
+  heads-up에 잔여로 기록되었던 항목).
+- [Fact] 사용자 verbatim: **"user.email 교체 후 처리 ㄱ"**, **"global 교체 ㄱㄱ"** = global git
+  identity 교체 + 이미 push된 기존 커밋 히스토리 소급 정정.
+- [Fact] 새 이메일 값 미지정 → 노출 제거 목적에 부합하는 값 필요. GitHub 사용자 id=**17896027**
+  (`gh api users/p4r4d0xb0x`). config scope: `user.email`/`user.name` 모두 global `~/.gitconfig`에서
+  옴(local override 없음) → global 교체가 이 repo에 그대로 적용.
+- [Fact] 커밋 3개 모두 author=committer=`p4r4d0xb0x<root@ql.gl>`, 이미 origin/main push됨 →
+  히스토리 재작성 시 force-push 불가피(단독 repo·협업자 없음 → 안전).
+
+### Decision (결정사항)
+
+1. **global `user.email` 교체**: `root@ql.gl` → **`17896027+p4r4d0xb0x@users.noreply.github.com`**
+   (GitHub noreply, privacy-preserving). `user.name`은 핸들 `p4r4d0xb0x` 유지 — 실명을 커밋에 박으면
+   프라이버시 역행, noreply+핸들 조합이 일관.
+2. **기존 3개 커밋 히스토리 재작성**: `git filter-branch --env-filter`로 author+committer 이메일만
+   `root@ql.gl`→noreply 교체, **이름·날짜 보존**(filter-repo 미설치 → built-in filter-branch 사용).
+3. **force-push**: `git push --force-with-lease=main:<old-sha>`로 명시적 lease(원격이 옛 `afcf2ef`일
+   때만 푸시). 해시 변경: `770bfec→0ec1c4a / 54fbdfc→d664600 / afcf2ef→1a0cd6d`.
+4. **로컬 백업 정리**: filter-branch가 `refs/original/refs/heads/main` **+
+   `refs/original/refs/remotes/origin/main`** 둘 다 생성 → 전부 삭제 + `reflog expire --all` +
+   `gc --prune=now`로 옛 커밋 완전 제거.
+
+### Consequences (영향)
+
+- [검증] 공개 repo의 모든 reachable 커밋에서 `root@ql.gl` 제거: `git log --all | grep -c root@ql.gl`
+  = **0**, 원격 head=`1a0cd6d`(로컬 일치), `git status` ahead/behind 0. 개인 이메일 비노출 달성.
+- global config 변경이라 **이 머신의 모든 repo 향후 커밋**이 noreply 사용 → 다른 GitHub identity로
+  작업 시 해당 repo에서 별도 지정 필요(heads-up).
+- DEC-015의 "커밋 author 이메일 노출" 잔여 heads-up **해소**.
+- [잔여] force-push 후 옛 커밋(`afcf2ef` 등)은 모든 브랜치에서 도달 불가하나, GitHub GC 전까지 직접
+  SHA 접근 시 일시 잔존 가능(공개 브랜치엔 비노출). 완전 소거는 GitHub Support GC 요청 영역.
+- 코드/문서/LICENSE 내용·커밋 메시지·트리 불변(식별자만 교체). LICENSE 저작권자
+  `Kim Dogyun (김도균)`, repo URL의 `p4r4d0xb0x` 핸들 유지(DEC-015과 동일).
+
+### Alternatives (대안)
+
+- **실제 개인 이메일로 교체**: 거부(현 단계) — 노출 제거가 목적인데 또 다른 개인 이메일 노출. 사용자가
+  원하면 동일 절차로 재교체 가능(보고서에 명시).
+- **`git commit --amend --reset-author`(최신 1개만)**: 거부 — 3개 전부 필요 + `--reset-author`는
+  날짜를 now로 리셋. filter-branch가 날짜 보존하며 전 커밋 처리.
+- **`git filter-repo`**: 미설치 + origin remote 자동 제거 부작용. built-in filter-branch가
+  remote 보존이라 채택.
+- **`user.name`도 실명(김도균)으로 교체**: 거부 — 프라이버시 역행(이메일 숨기는 작업과 모순). LICENSE
+  저작권 표기와 git 커밋 identity는 별개 사안.
+- **노출 방치**: 거부 — 사용자가 명시적으로 교체 요청.
 
 ## DEC-015 — 공개 git repo 발행(WeightForge) + source-available, publication-reserved 커스텀 LICENSE
 

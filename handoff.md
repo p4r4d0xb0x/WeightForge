@@ -1,6 +1,6 @@
 # Ferry — Session Handoff
 
-> 마지막 갱신: 2026-06-12 (공개 git repo 발행 `WeightForge` + strict source-available LICENSE, DEC-015; 그 전 Aster 실모델 확장 아크 DEC-008~014). 세션 간 인수인계용 요약. 권위 있는 세부는 `.agents/` 6 docs와 `AGENTS.md`를 따른다.
+> 마지막 갱신: 2026-06-13 (커밋 author/committer 이메일 GitHub noreply 교체 + 히스토리 재작성, DEC-016; 그 전 공개 git repo 발행 DEC-015, Aster 실모델 확장 DEC-008~014). 세션 간 인수인계용 요약. 권위 있는 세부는 `.agents/` 6 docs와 `AGENTS.md`를 따른다.
 
 ## 1. 한 줄 요약
 
@@ -10,8 +10,11 @@
 
 ## 2. 파일 구조 (flat, 패키징 없음)
 
-> **공개됨**(DEC-015): `github.com/p4r4d0xb0x/WeightForge`(PUBLIC, 코드네임 Ferry). 초기 커밋 `770bfece`,
-> `origin/main` 푸시 완료. `test_output/`(23GB)는 `.gitignore`로 제외(git 미진입). data-free 불변.
+> **공개됨**(DEC-015): `github.com/p4r4d0xb0x/WeightForge`(PUBLIC, 코드네임 Ferry). `origin/main`
+> head `1a0cd6d`. `test_output/`(23GB)는 `.gitignore`로 제외(git 미진입). data-free 불변.
+> **커밋 identity**(DEC-016): author/committer = GitHub noreply
+> (`17896027+p4r4d0xb0x@users.noreply.github.com`) — 개인 이메일 `root@ql.gl`을 filter-branch
+> 히스토리 재작성 + force-push로 제거(해시 `770bfec→0ec1c4a / 54fbdfc→d664600 / afcf2ef→1a0cd6d`).
 
 | 파일 | 역할 |
 |---|---|

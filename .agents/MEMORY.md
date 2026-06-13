@@ -1,7 +1,7 @@
 ---
 project: Ferry
 created: 2026-06-10
-updated: 2026-06-12 (DEC-014 Korean-weighted Procrustes 함정 추가)
+updated: 2026-06-13 (DEC-016 커밋 이메일 noreply 교체 + filter-branch 스크럽 함정 추가)
 ---
 
 # Memory
@@ -50,6 +50,7 @@ Cross-session knowledge base. 반복 패턴, 교훈, 주의사항.
 - **현실적 최악 = 세 축 동시**(`_demo_combined_mismatch`): vocab(72→48)·depth(4→2)·width(80→40) 모두 다르고 맵도 scrambled+partial(`_scrambled_vocab_map`, 40/48 임의 슬롯). 단일 축 데모는 각 축 격리; 이건 중첩. scrambled 맵이라 정합 전 top1 ≈ .016(진짜 다른 두 LM baseline; shared-prefix .41과 대비). 파이프라인 회복: stage0 reconcile → stage2 .53 → distill .86. 회귀 테스트 `test_combined_mismatch_baseline_is_near_zero`(base<.10) + `test_combined_mismatch_pipeline_recovers_all_three_axes`(단조, distill>.8). `theory.html` §9.
 - `theory.html` 과거 색상 typo `#1a2votes40` → `#1a2440` 수정 이력 있음. hex 손상 주의. **공학자 판본 재작성 후**: 신규 §0(표기법·문제 정식화) 추가로 시각 번호 **0–11**(section 태그 12개), svg 8, table 7(symtab 1 포함). 수식은 `.math`/`.steps`/`.note` CSS(무의존성, MathJax 없음, 유니코드 ℝΣ⊤𝔼). §5에 rank 정리 명문화. 결과 수치는 전부 기존 demo 값 참조(새 하드코딩 0).
 - **실모델 `ferry_qwen.py`**: teacher 실제 `Qwen/Qwen3-0.6B`(596M, vocab 151936, hidden 1024, L28, h16/kv8, head_dim 128, tied, RMSNorm/silu), student `ferry-?B`(같은 `Qwen3ForCausalLM`이나 작은 config; ferry-0.1B=512/1536/L8/h4·kv2=103M). **CPU 전용**(`CUDA_VISIBLE_DEVICES=""` import 전 설정, DEC-007 GPU 금지), **데이터-free**(random 토큰 probe), same-vocab → VocabMap 불필요. `LogitsModel` 어댑터로 HF `CausalLMOutput`→raw logits 변환해 `ferry.agreement`/`distill` 재사용. **bfloat16 함정**: Qwen3 config 기본 bf16 → `.float()` 강제 안 하면 CPU autograd backward "Found dtype Float but expected BFloat16". REAL: top1 0.000→0.195, mse 13.0→4.19, plateau ~0.19~0.21(3중 한계: 17% 파라미터+절반 깊이 / 151936 vocab diffuse MSE / off-distribution probe) = 정직한 PoC ceiling(버그 아님). 테스트 6종 gated(`pytest.importorskip('transformers')`). `AGENTS.md` Gotchas 참조.
+- **git 커밋 identity = GitHub noreply**(DEC-016): 이 머신 global `user.email` = `17896027+p4r4d0xb0x@users.noreply.github.com`(개인 이메일 `root@ql.gl` 노출 제거). **filter-branch 이메일 스크럽 함정**: `git filter-branch -- --all`은 백업 ref를 **2개** 만든다 — `refs/original/refs/heads/main` **+ `refs/original/refs/remotes/origin/main`**. `git log --all | grep`이 옛 이메일을 계속 잡으면 백업 ref 잔존이 원인 → `refs/original/*` **전부** 삭제 + `reflog expire --expire=now --all` + `gc --prune=now`로 완전 제거. force-push는 `--force-with-lease=main:<old-sha>` 명시적 lease. filter-branch는 author date 보존(`--amend --reset-author`는 날짜를 now로 리셋 → 다중 커밋엔 비권장). 해시 변경 `770bfec→0ec1c4a / 54fbdfc→d664600 / afcf2ef→1a0cd6d`. **`user.name`은 핸들 유지**(실명 박기 = 프라이버시 역행). force-push 후 옛 커밋은 GitHub GC 전까지 직접 SHA로 일시 잔존 가능.
 
 ## Gotchas — Aster 확장 (Gemma→Aster, DEC-008~013)
 
