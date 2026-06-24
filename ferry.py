@@ -138,9 +138,23 @@ def transform_tensor(
     if len(src_shape) != len(dst_shape):
         return src.clone(), "Skip"
 
-    # 2D weight matrices with mismatched dims: use SVD low-rank projection so
-    # the dominant directions of the teacher matrix survive into the student.
+    # 2D weight matrices with mismatched dims.
     if len(dst_shape) == 2 and src_shape != dst_shape:
+        src_rows, src_cols = src_shape
+        out_rows, out_cols = dst_shape
+        # Pure GROWTH (neither side shrinks): embed the teacher matrix in the
+        # top-left block and zero-pad the new rows/cols. This preserves the
+        # teacher's forward map EXACTLY on the original subspace (new dims
+        # contribute 0). SVD projection must NOT be used here: when both sides
+        # grow, m=n=rank collapses ``U_m^T A V_n`` to ``diag(sigma)`` (the
+        # singular values in a rotated basis), which destroys the teacher's
+        # input/output coordinate frame and produces pathological activations
+        # that compound across layers -> non-finite forward at scale.
+        if out_rows >= src_rows and out_cols >= src_cols:
+            return _crop_pad(src, dst_shape), "CropPad"
+        # Any side SHRINKS: SVD low-rank projection keeps the dominant teacher
+        # directions (Eckart-Young optimal restriction) for the shrinking side,
+        # zero-padding any growing side afterwards.
         return _svd_project(src, dst_shape), "SvdProject"
 
     # Same rank, mismatched size, not a 2D matrix: crop or zero-pad per dim.
@@ -180,8 +194,14 @@ def _svd_project(src: torch.Tensor, dst_shape: tuple[int, ...]) -> torch.Tensor:
     slice the top-left block" form, which broke orthogonality and biased toward
     the leading rows/columns. Purely algebraic: no data, no gradient steps.
 
-    Dimension *growth* on a side (``m>M`` or ``n>N``) has no teacher signal to
-    fill, so that side is zero-padded after projecting the available directions.
+    This routine is reached only when **at least one side shrinks** (see
+    ``transform_tensor``). A side that simultaneously *grows* (``out>src`` on the
+    other axis) has no teacher signal to fill, so that side is zero-padded after
+    projecting the available directions. Pure growth on *both* sides never
+    reaches here: it would degenerate to ``m=n=rank`` and collapse
+    ``U_m^T A V_n`` to ``diag(sigma)`` (singular values in a rotated basis),
+    which destroys the teacher's input/output frame -- ``transform_tensor``
+    routes that case to ``_crop_pad`` (identity embed + zero-pad) instead.
     """
     out_rows, out_cols = dst_shape
     a = src.float()

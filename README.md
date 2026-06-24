@@ -36,6 +36,7 @@ test_ferry_qwen.py          # gated tests (skip if model unavailable)
 transfer_gemma_to_aster.py  # real-model: Gemma-2 -> Aster weight transfer + vocab/byte-compose
 ferry_aster.py              # Aster PyTorch reproduction + data-free KD
 align_aster_embed.py        # closed-form Procrustes embed-basis alignment
+grow_aster_1b_to_3b.py      # stage-1 growth: aster-1b ckpt -> aster-3b initial seed (CPU, data-free)
 theory.html                 # self-contained theory write-up (no dependencies)
 AGENTS.md                   # project conventions and hard constraints
 .agents/                    # project docs (GOAL/PLAN/TODO/PROGRESS/DECISION/MEMORY)
@@ -50,7 +51,21 @@ python ferry.py                     # toy demo, prints transfer report
 # real-model extension (CPU-only, data-free) — needs transformers + accelerate
 python ferry_qwen.py                # distill Qwen3-0.6B -> ferry-0.1B, report
 python -m pytest test_ferry_qwen.py -q
+
+# grow a real local checkpoint: aster-1b -> aster-3b initial seed (CPU, data-free)
+python grow_aster_1b_to_3b.py --dry-run   # print the 1b->3b transfer plan only
+python grow_aster_1b_to_3b.py             # write ../SLM_FROM_BEGIN/.../aster-3b-init
+python -m pytest test_grow_aster_1b_to_3b.py -q
 ```
+
+`grow_aster_1b_to_3b.py` applies Ferry's Stage-1 weight transfer (SVD-project +
+zero-pad) to grow SLM_FROM_BEGIN's trained `aster-1b` into an `aster-3b` **initial
+seed** checkpoint. It writes a fully resume-ready 4-file checkpoint
+(`params.safetensors` + `state.json` at `global_step=0` + zero-valued AdamW
+`optimizer.safetensors` / `optimizer_state.json`), so the SLM trainer can start a
+3B run directly: `slm pretrain --resume-from <…>/aster-3b-init` (begins at step 1;
+Muon momentum starts from zero). Pass `--no-optimizer-sidecars` for a model-only
+checkpoint.
 
 `torch` is required (toy core has no other deps). `ferry_qwen.py` additionally
 needs `transformers` + `accelerate` and downloads `Qwen/Qwen3-0.6B` (~1.2GB) on

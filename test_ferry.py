@@ -45,6 +45,40 @@ def test_svd_project_2d_dim_mismatch() -> None:
     assert torch.isfinite(out).all()
 
 
+def test_grow_2d_embeds_teacher_top_left_not_svd() -> None:
+    """Pure 2D growth must EMBED the teacher (CropPad), not SVD-rotate it.
+
+    Regression for the 1B->3B growth bug: when both dims grow, the old SVD
+    path collapsed to ``diag(sigma)`` (rotated singular values), destroying the
+    teacher's input/output basis and producing pathological activations that
+    overflowed the forward pass at scale. The correct data-free growth is to
+    place the teacher matrix in the top-left block and zero-pad the new
+    rows/cols, preserving the teacher's forward map exactly on the original
+    subspace.
+    """
+    src = torch.randn(4, 4)
+    out, kind = clone.transform_tensor(src, (8, 8))
+    assert kind == "CropPad"
+    assert out.shape == (8, 8)
+    # Teacher embedded verbatim in the top-left block; new rows/cols are zero.
+    assert torch.equal(out[:4, :4], src)
+    assert torch.equal(out[4:, :], torch.zeros(4, 8))
+    assert torch.equal(out[:, 4:], torch.zeros(8, 4))
+    # Forward map preserved on the original subspace: for an input whose new
+    # dims are zero, the grown weight reproduces the teacher's output exactly.
+    x = torch.cat([torch.randn(4), torch.zeros(4)])
+    assert torch.allclose(out @ x, torch.cat([src @ x[:4], torch.zeros(4)]))
+
+
+def test_mixed_grow_shrink_2d_uses_svd() -> None:
+    """One side grows, one shrinks -> SVD restricts the shrinking side."""
+    src = torch.randn(64, 128)
+    out, kind = clone.transform_tensor(src, (96, 32))  # rows grow, cols shrink
+    assert kind == "SvdProject"
+    assert out.shape == (96, 32)
+    assert torch.isfinite(out).all()
+
+
 def test_skip_on_rank_mismatch() -> None:
     src = torch.randn(4, 4)
     out, kind = clone.transform_tensor(src, (4,))

@@ -1,6 +1,6 @@
 # Ferry — Session Handoff
 
-> 마지막 갱신: 2026-06-13 (커밋 author/committer 이메일 GitHub noreply 교체 + 히스토리 재작성, DEC-016; 그 전 공개 git repo 발행 DEC-015, Aster 실모델 확장 DEC-008~014). 세션 간 인수인계용 요약. 권위 있는 세부는 `.agents/` 6 docs와 `AGENTS.md`를 따른다.
+> 마지막 갱신: 2026-06-24 (aster-1b→3b 성장 도구 `grow_aster_1b_to_3b.py` 추가, §11 — 학습된 1b를 resume 가능한 3b 초기 시드로 확장; data-free·CPU). 그 전: 커밋 이메일 GitHub noreply 교체 DEC-016, 공개 git repo 발행 DEC-015, Aster 실모델 확장 DEC-008~014. 세션 간 인수인계용 요약. 권위 있는 세부는 `.agents/` 6 docs와 `AGENTS.md`를 따른다.
 
 ## 1. 한 줄 요약
 
@@ -25,6 +25,8 @@
 | `transfer_gemma_to_aster.py` | **Aster 확장**(DEC-008/009/010/012): Gemma-2 → aster-1b 순수 weight 전이 + embed vocab-map + byte-composition. ~840 LOC |
 | `ferry_aster.py` | **Aster 확장**(DEC-011/013): Aster PyTorch 재현(parity 바이트 일치) + Gemma-2B data-free KD + `final_hidden()`. 479+ LOC |
 | `align_aster_embed.py` | **Aster 확장**(DEC-013 b′ + DEC-014): closed-form 직교 Procrustes embed-basis 정렬 + 한글 가중(`--kr-weight`). ~300 LOC |
+| `grow_aster_1b_to_3b.py` | **Aster 1b→3b 성장**(§11): 학습된 aster-1b 체크포인트를 Stage-1 weight 전이로 aster-3b **초기 시드**로 확장. resume 가능한 4-file 출력. ~535 LOC |
+| `test_grow_aster_1b_to_3b.py` | `grow_aster_1b_to_3b.py` 테스트 **18 cases**(spec/route/sidecar/roundtrip + 실 1b gated) |
 | `test_output/` | Aster 산출물(전이/KD/정렬 params·report). git 미추적 |
 | `theory.html` | self-contained 이론 문서(공학자 판본, 무의존성). 시각 번호 §0–11, svg 8, table 7 (toy core 한정) |
 | `README.md` | **공개 repo 최소 README**(DEC-015) — 요약·4-stage·layout·실행법·정직한 한계·LICENSE 안내 |
@@ -141,3 +143,32 @@ printf '옛날 옛적에\n/exit\n' | ./target/release/slm-cli chat --model <dir>
 - **on-distribution KD/학습** = meaning alignment의 유일한 진짜 해법이나 **data-free 제약 위반 → 별도 승인 필수**.
 - byte-order 보존 seeding / 앵커 가중 Procrustes(회귀 완화) — data-free 유지 가능.
 - 또는 PoC 종료. 상세는 `.agents/TODO.md` Medium·`DECISION.md` DEC-011/013 Alternatives.
+
+## 11. Aster 1b → 3b 성장 (initial seed 체크포인트, `grow_aster_1b_to_3b.py`)
+
+**목적**: 학습된 `aster-1b`(20400 step)를 **데이터·gradient 없이** Ferry Stage-1
+weight 전이로 `aster-3b` **초기 시드**로 확장 → 3B 사전학습을 cold start 대신
+warm seed에서 시작. **전부 CPU·data-free·신규 디렉토리만**(live aster-1b read-only).
+
+- **성장 방향**(전부 증가): d_model 1536→3072, n_layers 26→28, kv_dim 768→1024,
+  ffn_inner 6144→8448, vocab 48000 동일, tied embed. 2D는 `ferry.transform_tensor`
+  (양측 SVD-project + zero-pad), 1D norm은 crop/zero-pad. **신규 블록 26·27**(teacher
+  대응 없음)은 SLM `init.rs` 분포로 fresh-init(trunc-normal std=0.02, residual
+  std=0.02/√(2·n_layers), gamma=1.0).
+- **출력**: `../SLM_FROM_BEGIN/artifacts/checkpoints/aster-3b-init/` **4-file**:
+  `params.safetensors`(12.13GB, 254텐서, 모두 `v2.`+F32, tied→head 없음) +
+  `state.json`(global_step=0, seed=3000000003) + **zero-valued AdamW 사이드카**
+  `optimizer.safetensors`(116텐서=58 AdamW param×{m,v}, F32 zeros) +
+  `optimizer_state.json`(schema1, beta1=.9/beta2=.95/eps=1e-8/wd=.1, 58 steps=0).
+  `muon_momentum.safetensors`는 **의도적 생략**(로더가 부재→zero로 처리).
+- **AdamW/Muon 분할**(SLM `muonclip.rs route()` 포팅): rank-2 + `blocks.` +
+  q/k/v/o/ffn_gate/ffn_up/ffn_down → Muon(196 행렬, 사이드카 없음→zero);
+  **그 외→AdamW**(28 attn_norm.gamma + 28 ffn_norm.gamma + embed + final_norm = **58**).
+- **resume 즉시 가능**: SLM 트레이너의 `load_training_checkpoint`는 4-file(params/
+  state/optimizer/optimizer_state) **강제 요구**(model-only 불가)였던 게 통합 갭이었고,
+  zero 사이드카로 해소. `slm pretrain --resume-from <…>/aster-3b-init` → step 1 시작,
+  Muon momentum 0 시작. `--no-optimizer-sidecars`로 model-only 출력 가능.
+- **검증**: `pytest test_grow_aster_1b_to_3b.py -q` → **18 passed**(실 1b gated 포함:
+  58 AdamW / 196 Muon / 254 total). 디스크 재검증 OK. 실 1b optimizer_state.json과
+  **구조 parity**(AdamW param families 동일, 26L→28L로 54→58 스케일, 하이퍼파라미터 동일).
+- **재생**: `python grow_aster_1b_to_3b.py --dry-run`(계획만) / `python grow_aster_1b_to_3b.py`(생성).
